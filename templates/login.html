@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://vj-prod-website-cms.s3.ap-southeast-1.amazonaws.com/2004249776visauc-1694488378806.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Transparent background for the container */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        /* Container to keep button and input aligned */
+        .form-container {
+            width: 100%; /* Sets container width */
+            max-width: 400px; /* Adjust as needed */
+            margin: 0 auto; /* Centers container horizontally */
+        }
+
+        /* Input fields */
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box; /* Ensures padding doesn't affect total width */
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            box-sizing: border-box; /* Ensures padding doesn't affect total width */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+        .guest-btn {
+            background-color: #008CBA;
+            margin-top: 15px;
+        }
+        .guest-btn:hover {
+            background-color: #007B9A;
+        }
+        /* Style for error message */
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Login</h2>
+
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="error-message">
+                    {% for category, message in messages %}
+                        {% if category == 'error' %}
+                            <p>{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Login form for admin/user -->
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-container">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-container">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Login as Guest button -->
+        <form action="{{ url_for('login') }}" method="POST">
+            <button type="submit" class="guest-btn" name="guest_login" value="True">Login as Guest</button>
+        </form>
+    </div>
+
+</body>
+</html>

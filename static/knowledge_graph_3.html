@@ -1,0 +1,170 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "electronic travel authority (eta)", "label": "Visa", "shape": "dot", "size": 10, "title": "Name: electronic travel authority (eta)"}, {"color": "#97c2fc", "id": "601", "label": "Visa_Subclass", "shape": "dot", "size": 10, "title": "Name: 601"}, {"color": "#97c2fc", "id": "no visa application charge (vac)", "label": "Cost", "shape": "dot", "size": 10, "title": "Name: no visa application charge (vac)"}, {"color": "#97c2fc", "id": "you must be outside australia when you apply for the eta and outside australia when the visa is granted", "label": "Application_Requirement", "shape": "dot", "size": 10, "title": "Name: you must be outside australia when you apply for the eta and outside australia when the visa is granted"}, {"color": "#97c2fc", "id": "visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia.", "label": "Description", "shape": "dot", "size": 10, "title": "Name: visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia."}, {"color": "#97c2fc", "id": "you can\u0027t include family members, such as children or your spouse, in your application. each family member must submit a separate application.", "label": "Family_Inclusion", "shape": "dot", "size": 10, "title": "Name: you can\u0027t include family members, such as children or your spouse, in your application. each family member must submit a separate application."}, {"color": "#97c2fc", "id": "your application might take longer to process if you don\u0027t answer the questions in the eta app correctly, we need more information from you, or your information is hard to verify", "label": "Processing_Requirement", "shape": "dot", "size": 10, "title": "Name: your application might take longer to process if you don\u0027t answer the questions in the eta app correctly, we need more information from you, or your information is hard to verify"}, {"color": "#97c2fc", "id": "we recommend you take out health insurance to cover any unforeseen medical treatment you might need in australia.", "label": "Health_Insurance", "shape": "dot", "size": 10, "title": "Name: we recommend you take out health insurance to cover any unforeseen medical treatment you might need in australia."}, {"color": "#97c2fc", "id": "we will digitally link your visa to your passport. you will not get a label in your passport.", "label": "Visa_Label", "shape": "dot", "size": 10, "title": "Name: we will digitally link your visa to your passport. you will not get a label in your passport."}, {"color": "#97c2fc", "id": "travel to australia as a tourist, to visit family or friends, or as a business visitor", "label": "Benefit", "shape": "dot", "size": 10, "title": "Name: travel to australia as a tourist, to visit family or friends, or as a business visitor"}, {"color": "#97c2fc", "id": "remain in australia for 3 months after each entry", "label": "Stay_Duration", "shape": "dot", "size": 10, "title": "Name: remain in australia for 3 months after each entry"}, {"color": "#97c2fc", "id": "in most cases, you will be notified of the result of your eta application immediately", "label": "Processing_Time", "shape": "dot", "size": 10, "title": "Name: in most cases, you will be notified of the result of your eta application immediately"}, {"color": "#97c2fc", "id": "if you have a criminal conviction in any country, apply for a visitor visa (subclass 600) and provide evidence about your criminal convictions", "label": "Processing_Requirement", "shape": "dot", "size": 10, "title": "Name: if you have a criminal conviction in any country, apply for a visitor visa (subclass 600) and provide evidence about your criminal convictions"}, {"color": "#97c2fc", "id": "apply for a visitor (subclass 600) visa and complete the relevant health checks if seeking to train at a childcare centre, study to be a doctor, dentist, nurse or paramedic, or enter health care or hospital environments", "label": "Health_Requirement", "shape": "dot", "size": 10, "title": "Name: apply for a visitor (subclass 600) visa and complete the relevant health checks if seeking to train at a childcare centre, study to be a doctor, dentist, nurse or paramedic, or enter health care or hospital environments"}, {"color": "#97c2fc", "id": "study or train for up to 3 months in total", "label": "Benefit", "shape": "dot", "size": 10, "title": "Name: study or train for up to 3 months in total"}, {"color": "#97c2fc", "id": "you can leave and re enter australia as many times as you want while it is valid", "label": "Travel_Right", "shape": "dot", "size": 10, "title": "Name: you can leave and re enter australia as many times as you want while it is valid"}, {"color": "#97c2fc", "id": "multiple entry", "label": "Travel_Right", "shape": "dot", "size": 10, "title": "Name: multiple entry"}, {"color": "#97c2fc", "id": "application service fee of aud20 to use the australian eta app", "label": "Cost", "shape": "dot", "size": 10, "title": "Name: application service fee of aud20 to use the australian eta app"}, {"color": "#97c2fc", "id": "meet all visa conditions and obey australian laws", "label": "Obligation", "shape": "dot", "size": 10, "title": "Name: meet all visa conditions and obey australian laws"}, {"color": "#97c2fc", "id": "evisitor visa", "label": "Visa", "shape": "dot", "size": 10, "title": "Name: evisitor visa"}, {"color": "#97c2fc", "id": "multiple entry allowed within the 12 month validity period", "label": "Benefit", "shape": "dot", "size": 10, "title": "Name: multiple entry allowed within the 12 month validity period"}, {"color": "#97c2fc", "id": "less than 1 day", "label": "Processing_Time", "shape": "dot", "size": 10, "title": "Name: less than 1 day"}, {"color": "#97c2fc", "id": "visa subclass 771", "label": "Visa_Subclass", "shape": "dot", "size": 10, "title": "Name: visa subclass 771"}, {"color": "#97c2fc", "id": "transit visa", "label": "Visa", "shape": "dot", "size": 10, "title": "Name: transit visa"}, {"color": "#97c2fc", "id": "nz passport holder", "label": "Eligibility", "shape": "dot", "size": 10, "title": "Name: nz passport holder"}, {"color": "#97c2fc", "id": "special category visa (subclass 444)", "label": "Visa", "shape": "dot", "size": 10, "title": "Name: special category visa (subclass 444)"}, {"color": "#97c2fc", "id": "maritime crew visa", "label": "Visa", "shape": "dot", "size": 10, "title": "Name: maritime crew visa"}, {"color": "#97c2fc", "id": "72 hours transit", "label": "Stay_Duration", "shape": "dot", "size": 10, "title": "Name: 72 hours transit"}, {"color": "#97c2fc", "id": "free", "label": "Cost", "shape": "dot", "size": 10, "title": "Name: free"}, {"color": "#97c2fc", "id": "visitor visa", "label": "Visa", "shape": "dot", "size": 10, "title": "Name: visitor visa"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_subclass", "to": "601", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_cost", "to": "no visa application charge (vac)", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_requirement", "to": "you must be outside australia when you apply for the eta and outside australia when the visa is granted", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "described_by", "to": "visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia.", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_requirement", "to": "you can\u0027t include family members, such as children or your spouse, in your application. each family member must submit a separate application.", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_requirement", "to": "your application might take longer to process if you don\u0027t answer the questions in the eta app correctly, we need more information from you, or your information is hard to verify", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "recommends", "to": "we recommend you take out health insurance to cover any unforeseen medical treatment you might need in australia.", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_feature", "to": "we will digitally link your visa to your passport. you will not get a label in your passport.", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "provides", "to": "travel to australia as a tourist, to visit family or friends, or as a business visitor", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "allows", "to": "remain in australia for 3 months after each entry", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_processing_time", "to": "in most cases, you will be notified of the result of your eta application immediately", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_requirement", "to": "if you have a criminal conviction in any country, apply for a visitor visa (subclass 600) and provide evidence about your criminal convictions", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_requirement", "to": "apply for a visitor (subclass 600) visa and complete the relevant health checks if seeking to train at a childcare centre, study to be a doctor, dentist, nurse or paramedic, or enter health care or hospital environments", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "provides", "to": "study or train for up to 3 months in total", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "grants", "to": "you can leave and re enter australia as many times as you want while it is valid", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "grants", "to": "multiple entry", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "has_cost", "to": "application service fee of aud20 to use the australian eta app", "width": 1}, {"arrows": "to", "from": "electronic travel authority (eta)", "label": "requires", "to": "meet all visa conditions and obey australian laws", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "providesBenefit", "to": "study or train for up to 3 months in total", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasVisaLabel", "to": "we will digitally link your visa to your passport. you will not get a label in your passport.", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "providesBenefit", "to": "multiple entry allowed within the 12 month validity period", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasFamilyInclusion", "to": "you can\u0027t include family members, such as children or your spouse, in your application. each family member must submit a separate application.", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasHealthInsurance", "to": "we recommend you take out health insurance to cover any unforeseen medical treatment you might need in australia.", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "has_processing_time", "to": "less than 1 day", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "providesBenefit", "to": "travel to australia as a tourist, to visit family or friends, or as a business visitor", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "has_cost", "to": "no visa application charge (vac)", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasDescription", "to": "visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia.", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasObligation", "to": "meet all visa conditions and obey australian laws", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasHealthRequirement", "to": "apply for a visitor (subclass 600) visa and complete the relevant health checks if seeking to train at a childcare centre, study to be a doctor, dentist, nurse or paramedic, or enter health care or hospital environments", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasTravelRight", "to": "you can leave and re enter australia as many times as you want while it is valid", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasStayDuration", "to": "remain in australia for 3 months after each entry", "width": 1}, {"arrows": "to", "from": "evisitor visa", "label": "hasApplicationRequirement", "to": "you must be outside australia when you apply for the eta and outside australia when the visa is granted", "width": 1}, {"arrows": "to", "from": "study or train for up to 3 months in total", "label": "is_part_of", "to": "visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia.", "width": 1}, {"arrows": "to", "from": "visa subclass 771", "label": "is_a_type_of", "to": "transit visa", "width": 1}, {"arrows": "to", "from": "meet all visa conditions and obey australian laws", "label": "is_part_of", "to": "meet all visa conditions and obey australian laws", "width": 1}, {"arrows": "to", "from": "multiple entry allowed within the 12 month validity period", "label": "is_part_of", "to": "visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia.", "width": 1}, {"arrows": "to", "from": "nz passport holder", "label": "eligible_for", "to": "special category visa (subclass 444)", "width": 1}, {"arrows": "to", "from": "you must be outside australia when you apply for the eta and outside australia when the visa is granted", "label": "is_similar_to", "to": "you must be outside australia when you apply for the eta and outside australia when the visa is granted", "width": 1}, {"arrows": "to", "from": "apply for a visitor (subclass 600) visa and complete the relevant health checks if seeking to train at a childcare centre, study to be a doctor, dentist, nurse or paramedic, or enter health care or hospital environments", "label": "alternative_to", "to": "apply for a visitor (subclass 600) visa and complete the relevant health checks if seeking to train at a childcare centre, study to be a doctor, dentist, nurse or paramedic, or enter health care or hospital environments", "width": 1}, {"arrows": "to", "from": "remain in australia for 3 months after each entry", "label": "is_equivalent_to", "to": "remain in australia for 3 months after each entry", "width": 1}, {"arrows": "to", "from": "we will digitally link your visa to your passport. you will not get a label in your passport.", "label": "applies_to", "to": "evisitor visa", "width": 1}, {"arrows": "to", "from": "you can\u0027t include family members, such as children or your spouse, in your application. each family member must submit a separate application.", "label": "is_equivalent_to", "to": "you can\u0027t include family members, such as children or your spouse, in your application. each family member must submit a separate application.", "width": 1}, {"arrows": "to", "from": "we recommend you take out health insurance to cover any unforeseen medical treatment you might need in australia.", "label": "is_equivalent_to", "to": "we recommend you take out health insurance to cover any unforeseen medical treatment you might need in australia.", "width": 1}, {"arrows": "to", "from": "you can leave and re enter australia as many times as you want while it is valid", "label": "is_equivalent_to", "to": "you can leave and re enter australia as many times as you want while it is valid", "width": 1}, {"arrows": "to", "from": "less than 1 day", "label": "is_part_of", "to": "less than 1 day", "width": 1}, {"arrows": "to", "from": "transit visa", "label": "can_be_used_with", "to": "maritime crew visa", "width": 1}, {"arrows": "to", "from": "transit visa", "label": "allows_for", "to": "72 hours transit", "width": 1}, {"arrows": "to", "from": "transit visa", "label": "has_cost", "to": "free", "width": 1}, {"arrows": "to", "from": "transit visa", "label": "alternative_to", "to": "electronic travel authority (eta)", "width": 1}, {"arrows": "to", "from": "transit visa", "label": "alternative_to", "to": "visitor visa", "width": 1}, {"arrows": "to", "from": "transit visa", "label": "alternative_to", "to": "evisitor visa", "width": 1}, {"arrows": "to", "from": "travel to australia as a tourist, to visit family or friends, or as a business visitor", "label": "is_part_of", "to": "visit australia as often as you wish in a 12 month period. stay up to 3 months each time you enter australia.", "width": 1}, {"arrows": "to", "from": "no visa application charge (vac)", "label": "is_equivalent_to", "to": "no visa application charge (vac)", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
