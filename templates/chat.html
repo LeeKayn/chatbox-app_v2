@@ -351,12 +351,7 @@
                 });
             });
 
-            // Event for Undo button
-            $('#but-undo').click(function() {
-                $.post('/undo', function(response) {
-                    alert(response.message);  // Show the response message
-                });
-            });
+
 
             $("#uploadFileTab").click(function() {
                 switchTab('#uploadFileContent');
@@ -387,15 +382,7 @@
                 $('.container-fluid').removeClass('disabled-content');
                 $('button, input[type="file"], .nav-link').prop('disabled', false);
             }
-            $('#but-merge').off('click').on('click', function() {
-                showLoading();
-                $.post('/merge', function(response) {
-                    alert(response.message);  // Show the response message
-                    hideLoading();
-                    // Reload the visualization
-                    $('#visualizationContent iframe').attr('src', '/visualize');
-                });
-            });
+
             function toggleButtons(viewState, mergeState, undoState) {
                 $('#but-view-kg').prop('disabled', viewState);
                 $('#but-merge').prop('disabled', mergeState);
@@ -426,7 +413,12 @@
                 $.post('/undo', function(response) {
                     alert(response.message);  // Show the response message
                     hideLoading();
-                    // Reload the visualization
+                    // Reload the visualization in the upload section
+                    if (response.graph_html) {
+                        $("#graphContent").html(response.graph_html);
+                        localStorage.setItem('graph_html', response.graph_html);
+                    }
+                    // Reload the visualization in the visualization section
                     $('#visualizationContent iframe').attr('src', '/visualize');
                     // Update button states
                     toggleButtons(false, false, true);
