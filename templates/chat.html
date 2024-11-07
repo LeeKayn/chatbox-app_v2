@@ -396,22 +396,46 @@
                     $('#visualizationContent iframe').attr('src', '/visualize');
                 });
             });
+            function toggleButtons(viewState, mergeState, undoState) {
+                $('#but-view-kg').prop('disabled', viewState);
+                $('#but-merge').prop('disabled', mergeState);
+                $('#but-undo').prop('disabled', undoState);
+            }
 
-            $('#but-undo').off('click').on('click', function() {
+            // Initially disable the buttons
+            toggleButtons(true, true, false);
+
+            $('#but-merge').click(function() {
+                showLoading();
+                $.post('/merge', function(response) {
+                    alert(response.message);  // Show the response message
+                    hideLoading();
+                    // Reload the visualization
+                    $('#visualizationContent iframe').attr('src', '/visualize');
+                    // Update button states
+                    toggleButtons(false, true, false);
+                });
+            });
+
+            $('#but-undo').click(function() {
                 showLoading();
                 $.post('/undo', function(response) {
                     alert(response.message);  // Show the response message
                     hideLoading();
                     // Reload the visualization
                     $('#visualizationContent iframe').attr('src', '/visualize');
+                    // Update button states
+                    toggleButtons(false, false, true);
                 });
             });
+
             $('#but-view-kg').click(function() {
                 $.get('/view_kg_steps', function(response) {
                     $('#kgContent').text(response);
                     $('#kgModal').modal('show');
                 });
             });
+
 
             $("#fileInput").change(function() {
                 const file = this.files[0];
