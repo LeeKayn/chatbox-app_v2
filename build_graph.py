@@ -7,7 +7,9 @@ from itext2kg import iText2KG
 import pickle
 import json
 import os
-
+import sys
+from io import StringIO
+import io
 openai_api_key = os.getenv("API_GPT_YEU")
 
 openai_llm_model = llm = ChatOpenAI(
@@ -66,63 +68,64 @@ class VisaBaseModel(BaseModel):
 
 def upload_and_distill(documents_information: List[Tuple[str, List[int], BaseModel, str]]):
     distilled_docs = []
-    print("Uploading documents...")
+    stderr_capture = io.StringIO()
+    sys.stderr = stderr_capture
 
-    for path_, exclude_pages, blueprint, document_type in documents_information:
-        
-        # Check if the document is a PDF or a text file
-        if path_.endswith('.pdf'):
-            loader = PyPDFLoader(path_)
-            pages = loader.load_and_split()
-            pages = [page for page in pages if page.metadata["page"] + 1 not in exclude_pages]  # Exclude specified pages
-            documents = [page.page_content.replace("{", '[').replace("}", "]") for page in pages]
-        elif path_.endswith('.txt'):
-            with open(path_, 'r', encoding='utf-8') as file:
-                documents = ''.join([line.replace("{", '[').replace("}", "]") for line in file.readlines()])
-                # Wrap the joined text in a list to make it compatible with further processing if needed
-                documents = [documents]
+    try:
+        print("Uploading documents...", flush=True, file=sys.stderr)
 
-        print(f"Processing document type: {document_type}")
-        print(documents)
-        # Initialize the document distiller
-        document_distiller = DocumentsDistiller(llm_model=llm)
-        print("Done embedding")
+        for path_, exclude_pages, blueprint, document_type in documents_information:
+            if path_.endswith('.pdf'):
+                loader = PyPDFLoader(path_)
+                pages = loader.load_and_split()
+                pages = [page for page in pages if page.metadata["page"] + 1 not in exclude_pages]
+                documents = [page.page_content.replace("{", '[').replace("}", "]") for page in pages]
+            elif path_.endswith('.txt'):
+                with open(path_, 'r', encoding='utf-8') as file:
+                    documents = ''.join([line.replace("{", '[').replace("}", "]") for line in file.readlines()])
+                    documents = [documents]
 
-        # Information Extraction query tailored for visa data
-        IE_query = f''' 
-# DIRECTIVES :  
-- Act like an experienced information extractor. 
-- Pay special attention to the subclass of the visa. 
-- Extract all relevant information, especially focusing on subclass, including type of visa, duration, service charge, notification details, application advice, and any conditions. 
-- If you do not find the right information, keep its place empty. 
-'''
-        
-        # Distill document content with the query
-        print(IE_query)
-        print("Step 1: Starting distillation...")
-        distilled_doc = document_distiller.distill(
-            documents=documents,
-            IE_query=IE_query,
-            output_data_structure=blueprint
-        )
-        print("Step 2: Distillation complete")
+            print(f"Processing document type: {document_type}", file=sys.stderr)
+            print(documents, file=sys.stderr)
+            document_distiller = DocumentsDistiller(llm_model=llm)
+            print("Done embedding", file=sys.stderr)
 
-        # Filter and format distilled document results
-        distilled_docs.append([ 
-            f"{document_type}'s {key} - {value}".replace("{", "[").replace("}", "]")  
-            for key, value in distilled_doc.items()  
-            if value and value != [] 
-        ]) 
-     
-    return distilled_docs 
+            IE_query = '''
+                # DIRECTIVES :
+                - Act like an experienced information extractor.
+                - Pay special attention to the subclass of the visa.
+                - Extract all relevant information, especially focusing on subclass, including type of visa, duration, service charge, notification details, application advice, and any conditions.
+                - If you do not find the right information, keep its place empty.
+                '''
+
+            print(IE_query, file=sys.stderr)
+            print("Step 1: Starting distillation...", file=sys.stderr)
+            distilled_doc = document_distiller.distill(
+                documents=documents,
+                IE_query=IE_query,
+                output_data_structure=blueprint
+            )
+            print("Step 2: Distillation complete", file=sys.stderr)
+
+            distilled_docs.append([
+                f"{document_type}'s {key} - {value}".replace("{", "[").replace("}", "]")
+                for key, value in distilled_doc.items()
+                if value and value != []
+            ])
+    finally:
+        sys.stderr = sys.__stderr__
+
+    log_content = stderr_capture.getvalue()
+    return distilled_docs, log_content
 
 def build_new_graph():
     item_path="data/input.txt"
     documents_information = [(item_path, [], VisaBaseModel, 'visa information'),]
-    
-    distilled_docs = upload_and_distill(documents_information=documents_information)
-    itext2kg = iText2KG(llm_model = openai_llm_model, embeddings_model = openai_embeddings_model)
 
+    distilled_docs,log_content = upload_and_distill(documents_information=documents_information)
+    itext2kg = iText2KG(llm_model = openai_llm_model, embeddings_model = openai_embeddings_model)
+    with open("data/output.txt", 'w', encoding='utf-8') as file:
+        file.write(log_content)
     kg = itext2kg.build_graph(sections=distilled_docs, ent_threshold=0.9, rel_threshold=0.7,entity_name_weight=0.7, entity_label_weight= 0.3,max_tries_isolated_entities=3)
     with open('knowledge_graph_user.pkl', 'wb') as file:
             pickle.dump(kg, file)

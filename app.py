@@ -125,7 +125,7 @@ def get_Chat_response(text):
 @app.route('/visualize')
 def visualize_knowledge_graph():
     # Load the knowledge graph data
-    file_path = 'knowledge_graph.pkl'  # Replace with the actual file path
+    file_path = 'knowledge_graph.pkl'  # Updated file path
     with open(file_path, 'rb') as file:
         data = pickle.load(file)
 
@@ -202,7 +202,7 @@ def handle_file_upload():
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
     build_new_graph()
-    file_path = 'knowledge_graph_2.pkl'
+    file_path = 'knowledge_graph_user.pkl'
     with open(file_path, 'rb') as file:
         data = pickle.load(file)
 
@@ -274,7 +274,14 @@ def handle_file_upload():
     response.headers['Expires'] = '0'
     return response
 
-
+@app.route('/view_kg_steps', methods=['GET'])
+def view_kg_steps():
+    try:
+        with open('data/output.txt', 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        return f"Error reading file: {str(e)}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
