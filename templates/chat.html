@@ -351,6 +351,12 @@
                 });
             });
 
+            $(document).on('click', '.view-cypher-btn', function() {
+                const cypherQuery1 = $(this).data('cypher-query1');
+                const cypherQuery2 = $(this).data('cypher-query2');
+                $('#cypherQueryContent').html(`<pre>${cypherQuery1}</pre><pre>${cypherQuery2}</pre>`);
+                $('#cypherModal').modal('show');
+            });
 
 
             $("#uploadFileTab").click(function() {
@@ -477,6 +483,9 @@
                 const message = $("#qaText").val();
                 if (!message) return;
 
+                // Disable or remove the previous "View Cypher" button
+                $(".view-cypher-btn").prop('disabled', true).remove();
+
                 $("#messageFormeightQA").append(`
                     <div class="d-flex justify-content-end mb-4">
                         <div class="msg_cotainer_send">${message}</div>
@@ -492,7 +501,8 @@
                     success: function(response) {
                         $("#messageFormeightQA").append(`
                             <div class="d-flex justify-content-start mb-4">
-                                <div class="msg_cotainer">${response}</div>
+                                <div class="msg_cotainer">${response.response_text}</div>
+                                <button class="btn btn-secondary btn-sm ms-2 view-cypher-btn" data-cypher-query1="${escapeHtml(response.response_1)}" data-cypher-query2="${escapeHtml(response.response_2)}">View Cypher</button>
                             </div>
                         `);
                         $("#messageFormeightQA").scrollTop($("#messageFormeightQA")[0].scrollHeight);
@@ -501,6 +511,7 @@
                         $("#messageFormeightQA").append(`
                             <div class="d-flex justify-content-start mb-4">
                                 <div class="msg_cotainer">Error communicating with the server.</div>
+                                <button class="btn btn-secondary btn-sm ms-2 view-cypher-btn" data-cypher-query1="Error executing Cypher query. Please try again." data-cypher-query2="">View Cypher</button>
                             </div>
                         `);
                         $("#messageFormeightQA").scrollTop($("#messageFormeightQA")[0].scrollHeight);
@@ -569,9 +580,23 @@
                 <div class="modal-body">
                     <pre id="kgContent" style="white-space: pre-wrap;"></pre>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Add this modal window at the end of the body tag -->
+    <div class="modal fade" id="cypherModal" tabindex="-1" role="dialog" aria-labelledby="cypherModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cypherModalLabel">Cypher Query</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
+                <div class="modal-body">
+                    <pre id="cypherQueryContent" style="white-space: pre-wrap;"></pre>
+                </div>
+
             </div>
         </div>
     </div>

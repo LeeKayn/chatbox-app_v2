@@ -92,8 +92,12 @@ def chat_user():
 @app.route('/get', methods=['GET', 'POST'])
 def chat_response():
     msg = request.form["msg"]
-    response_text = get_Chat_response(msg)
-    return response_text
+    response_text, response_1, response_2 = get_Chat_response(msg)
+    return jsonify({
+        "response_text": response_text,
+        "response_1": response_1,
+        "response_2": response_2
+    })
 
 @app.route('/merge', methods=['POST'])
 def merge_action():
@@ -242,11 +246,11 @@ def undo_action():
 def get_Chat_response(text):
     try:
         # Replace the OpenAI API call with prettylanghcain function
-        response = prettyCypherChain(text)
+        response,response_1,response_2 = prettyCypherChain(text)
 
         # If the response is expected to be a string, return it
         if response:
-            return response
+            return response,response_1,response_2
         else:
             return "Unexpected response format or missing content."
 
