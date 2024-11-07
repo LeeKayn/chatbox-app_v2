@@ -410,9 +410,13 @@
                 $.post('/merge', function(response) {
                     alert(response.message);  // Show the response message
                     hideLoading();
-                    // Reload the visualization
+                    // Update the visualization in the upload section
+                    if (response.graph_html) {
+                        $("#graphContent").html(response.graph_html);
+                        localStorage.setItem('graph_html', response.graph_html);
+                    }
+                    // Reload the visualization in the visualization section
                     $('#visualizationContent iframe').attr('src', '/visualize');
-                    // Update button states
                     toggleButtons(false, true, false);
                 });
             });
