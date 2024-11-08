@@ -17,9 +17,9 @@ users = {
     "user": "user123"
 }
 
-NEO4J_URI = 'neo4j+s://1630ec5e.databases.neo4j.io'
+NEO4J_URI = 'neo4j+s://a0102dcf.databases.neo4j.io'
 NEO4J_USERNAME = 'neo4j'
-NEO4J_PASSWORD = 'xcXJQxaIyPazmgU0tpFCypLrS0lg-_W0M6Qil33QJlM'
+NEO4J_PASSWORD = '7O3_fCMydw2NWHAUMlERU1s-fLvs_KJHkh0rpOaURRE'
 NEO4J_DATABASE = 'neo4j'
 
 # Create a Neo4j graph object
@@ -252,10 +252,10 @@ def get_Chat_response(text):
         if response:
             return response,response_1,response_2
         else:
-            return "Unexpected response format or missing content."
+            return "Unexpected response format or missing content.", "", ""
 
     except Exception as e:
-        return f"An error occurred: {e}"
+        return f"An error occurred: {e}", "", ""
 
 
 

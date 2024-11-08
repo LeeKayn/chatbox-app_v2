@@ -20,7 +20,7 @@ NEO4J_URI = 'neo4j+s://a0102dcf.databases.neo4j.io'
 NEO4J_USERNAME = 'neo4j'
 NEO4J_PASSWORD = '7O3_fCMydw2NWHAUMlERU1s-fLvs_KJHkh0rpOaURRE'
 NEO4J_DATABASE = 'neo4j'
-OPENAI_API_KEY = os.getenv("API_KEY_YEU")
+OPENAI_API_KEY = 
 kg = Neo4jGraph(
     url=NEO4J_URI, username=NEO4J_USERNAME, password=NEO4J_PASSWORD, database=NEO4J_DATABASE
 )
@@ -87,5 +87,4 @@ cypherChain = GraphCypherQAChain.from_llm(
 )
 def prettyCypherChain(question):
     response = cypherChain.run(question)
-    # print(textwrap.fill(response, 60))
     return response[0],response[1],response[2]
